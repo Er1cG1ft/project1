@@ -1,3 +1,66 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+@import "~milligram/dist/milligram";
+
+.piece {
+    border-radius:100px;
+    width:80px;
+    height:80px;
+    margin-left:17px;
+}
+
+.piece:hover{
+    cursor:pointer;
+}
+
+.black {
+    background-color: black;
+}
+
+.red {
+    background-color: red;
+}
+
+.tile {
+    height:100px;
+    width:100%;
+    padding:10px;
+}
+
+.no-piece {
+    padding:0!important;
+}
+
+.board-column {
+    padding:0!important;
+}
+
+.board {
+    border: 1px solid black;
+    padding-left:10px!important;
+    padding-right:10px!important;
+}
+
+.gray {
+    background-color:gray;
+}
+
+.highlight {
+    z-index: 10;
+    display: block;
+    height: 100%;
+    opacity:.4;
+}
+
+.valid {
+    background-color:orange;
+}
+
+.jump {
+    background-color:green;
+}
+
+.highlight:hover {
+    cursor:pointer;
+}

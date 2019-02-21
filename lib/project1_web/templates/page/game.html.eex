@@ -1,8 +1,12 @@
 <div class="row">
   <div class="column">
-    <h1><%= @name %></h1>
+    <h1>Checkers: <%= @name %></h1>
     <div id="root">
       <p>React app loading...</p>
     </div>
   </div>
 </div>
+<script>
+ window.gameName = "<%= @name %>";
+ window.playerName = "<%= @player_name %>";
+</script>

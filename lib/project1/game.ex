@@ -1,18 +1,61 @@
 defmodule Project1.Game do
   def new do
     %{
-      lastClick: [-1, -1, false],
-      clicks: 0,
-      won: false
+      pieces: new_board(),
+      players: []
     }
   end
   
   def client_view(game) do
     %{
-      tiles: game.tiles,
-      lastClick: game.lastClick,
-      score: game.score,
-      clicks: game.clicks
+      pieces: game.pieces,
+      players: game.players
     }
   end
+  
+  def add_player(game, name) do
+    players = game.players
+    players = players ++ [%{id: length(game.players) + 1, name: name}]
+    # cond do
+    #   Enum.at(players, 0).name == nil -> players = Map.put(Enum.at(players, 0), :name, name)
+    #   Enum.at(players, 1).name == nil -> players = Map.put(Enum.at(players, 1), :name, name)
+    #   true -> players = players ++ %{id: 0, name: name}
+    # end
+    IO.inspect(players)
+    Map.merge(game, %{players: players})
+  end
+  
+  def move(game, from, to) do
+    pieces = Enum.map(Enum.with_index(game.pieces), fn {r, v} -> 
+      Enum.map(Enum.with_index(r), fn {p, i} ->
+        cond do
+        (v == Enum.at(to, 0) && i == Enum.at(to, 1)) ->
+          Map.put(p, :player, Map.get(from, "player"))
+        (v == Enum.at(Map.get(from, "loc"), 0) && i == Enum.at(Map.get(from, "loc"), 1)) ->
+          Map.put(p, :player, 0)
+        true -> p
+        end
+      end)
+    end)
+    Map.merge(game, %{pieces: pieces})
+  end
+  
+  def new_board do
+    pieces = [
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [2, 0, 2, 0, 2, 0, 2, 0],
+        [0, 2, 0, 2, 0, 2, 0, 2],
+        [2, 0, 2, 0, 2, 0, 2, 0]
+      ]
+    Enum.map(pieces, fn r -> 
+      Enum.map(r, fn p -> 
+        %{player: p, color: "gray"}
+      end)
+    end)
+  end
+  
 end

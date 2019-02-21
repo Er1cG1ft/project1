@@ -18,11 +18,6 @@ import $ from "jquery";
 import socket from "./socket"
 
 import game_init from "./project1";
-
-let channel = socket.channel("games:default", {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
   
 function start() {
   let root = document.getElementById('root');
@@ -32,6 +27,5 @@ function start() {
     game_init(root, channel);
   }
 }
-
 $(start);
 

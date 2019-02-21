@@ -9,9 +9,11 @@ defmodule Project1.Application do
     # List all child processes to be supervised
     children = [
       # Start the endpoint when the application starts
-      Project1Web.Endpoint
+      Project1Web.Endpoint,
       # Starts a worker by calling: Project1.Worker.start_link(arg)
       # {Project1.Worker, arg},
+      Project1.GameSup,
+      Project1.BackupAgent
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

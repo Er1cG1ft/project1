@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Project1 · Phoenix Framework</title>
     <link rel="stylesheet" href="http://hw03-elixir-er1cg1ft.c9users.io:8080/css/app.css"/>
+    <script>
+      window.userToken = "TODO";
+    </script>
   </head>
   <body>
     <main role="main" class="container">

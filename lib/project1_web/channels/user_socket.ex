@@ -3,6 +3,7 @@ defmodule Project1Web.UserSocket do
 
   ## Channels
   # channel "room:*", Project1Web.RoomChannel
+  channel "games:*", Project1Web.GamesChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

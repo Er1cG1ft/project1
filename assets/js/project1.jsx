@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import $ from 'jquery';
-import Player from './player';
 
 export default function game_init(root, channel) {
   ReactDOM.render(<Project1 channel={channel} />, root);
@@ -15,164 +14,159 @@ class Project1 extends React.Component {
     this.state = {
         
     };
-    this.board = null;
-    this.height = window.innerHeight - 25;
-    this.width = window.innerWidth - 25;
-    this.player = null;
-    this.velY = 0;
-    this.velX = 0;
-    this.speed = 2;
-    this.friction = 0.98;
-    this.keys = [];
-    window.addEventListener('keyup', (e) => {this.keys[e.keyCode] = false});
-    window.addEventListener('keydown', (e) => {this.keys[e.keyCode] = true});
+    this.player = -1;
+    this.pieceSelected = null;
     this.channel
         .join()
-        .receive("ok",  this.got_view.bind(this))
+        .receive("ok", this.got_view.bind(this))
         .receive("error", resp => { console.log("Unable to join", resp); });
+    this.channel.on("update", this.got_view.bind(this));
+  }
+  
+  set_player(player) {
+    this.player = player.id;
   }
   
   got_view(view) {
     console.log("Got view:");
     console.log(view);
+    this.user = view.game.players.find(function(element) {
+      return element.name == window.playerName;
+    });
+    if (this.user != undefined) {
+      this.player = this.user.id;
+    }
+    if (this.player < 0) {
+      this.channel.push("add_player", {name: window.playerName})
+        .receive("ok", this.got_view.bind(this));
+    }
     this.setState(view.game);
   }
   
   on_move(row, column) {
-    this.channel.push("move", { location: [row, column] })
-        .receive("ok", this.got_view.bind(this));
-  }
-
-  restart(_ev) {
-    this.channel.push("restart", {})
+    this.channel.push("move", { from: this.pieceSelected, to: [row, column] })
         .receive("ok", this.got_view.bind(this));
   }
   
-  //set up game after dom loaded
-  componentDidMount() {
-    let board = this.refs.board.getContext('2d');
-    this.board = board;
-    this.player = new Player({position: [this.height/2, this.width/2]});
-    this.renderPlayer(this.player.position);
-    console.log(this.board);
-    this.channel.push("add_player", { player: this.player.position })
-        .receive("ok", this.got_view.bind(this));
-    this.startGame();
-    requestAnimationFrame(() => {this.update()});
-  }
-  
-  renderPlayer(position) {
-    this.board.save();
-    this.board.fillStyle = 'gray';
-    this.board.fillRect(0, 0, this.width, this.height);
-    this.board.strokeStyle = '#ffffff';
-    this.board.fillStyle = '#000000';
-    this.board.lineWidth = 2;
-    this.board.beginPath();
-    this.board.arc(position.x, position.y, 5, 0, Math.PI * 2);
-    this.board.closePath();
-    this.board.fill();
-    this.board.stroke();
-    this.board.restore();
-  }
-  
-  update() {
-    requestAnimationFrame(() => {this.update()});
-    if (this.keys[38]) {
-      if (this.velY > -this.speed) {
-          this.velY--;
+  on_select(row, column) {
+    for (var i = 0; i < this.state.pieces.length; i++) {
+      for (var j = 0; j < this.state.pieces[i].length; j++) {
+        this.state.pieces[i][j].valid = false;
+        this.state.pieces[i][j].jump = false;
       }
     }
-    if (this.keys[40]) {
-      if (this.velY < this.speed) {
-          this.velY++;
-      }
-    }
-    if (this.keys[39]) {
-      if (this.velX < this.speed) {
-          this.velX++;
-      }
-    }
-    if (this.keys[37]) {
-      if (this.velX > -this.speed) {
-          this.velX--;
-      }
+    let left = this.state.pieces[row - 1][column - 1];
+    let right = this.state.pieces[row - 1][column + 1];
+    
+    if (left.player == 0){
+      left.valid = true;
+    } else if (left.player > 0 && left.player != this.player && this.state.pieces[row - 2][column - 2].player == 0) {
+      this.state.pieces[row - 2][column - 2].jump = true;
     }
     
-    this.velY *= this.friction;
-    this.player.position.y += this.velY;
-    this.velX *= this.friction;
-    this.player.position.x += this.velX;
-
-    if (this.player.position.x >= this.width - 5) {
-        this.player.position.x = this.width - 5;
-    } else if (this.player.position.x <= 5) {
-        this.player.position.x = 5;
-    }
-    if (this.player.position.y > this.height - 5) {
-        this.player.position.y = this.height - 5;
-    } else if (this.player.position.y <= 5) {
-        this.player.position.y = 5;
-    }
-
-    this.renderPlayer(this.player.position);
-
-  }
-  
-  startGame(){
-  }
-  
-  movePlayer(e) {
-    this.keys[e.keyCode] = true;
-    switch(e.keyCode) {
-      //left
-      case 37:
-        if (this.velX > -this.speed) {
-            this.velX--;
-        }
-        break;
-      //right
-      case 39:
-        if (this.velX < this.speed) {
-            this.velX++;
-        }
-        break;
-      //up 
-      case 38:
-        if (this.velY > -this.speed) {
-            this.velY--;
-        }
-        break;
-      //down
-      case 40:
-        if (this.velY < this.speed) {
-            this.velY++;
-        }
-        break;  
+    if (right.player == 0){
+      right.valid = true;
+    } else if (right.player > 0 && right.player != this.player && this.state.pieces[row - 2][column + 2].player == 0) {
+      this.state.pieces[row - 2][column + 2].jump = true;
     }
     
-    this.velY *= this.friction;
-    this.player.position[1] += this.velY;
-    this.velX *= this.friction;
-    this.player.position[0] += this.velX;
-
-    if (this.player.position[0] >= this.width - 5) {
-        this.player.position[0] = this.width - 5;
-    } else if (this.player.position[0] <= 5) {
-        this.player.position[0] = 5;
-    }
-
-    if (this.player.position[1] > this.height - 5) {
-        this.player.position[1] = this.height - 5;
-    } else if (this.player.position[1] <= 5) {
-        this.player.position[1] = 5;
-    }
-    this.renderPlayer(this.player.position);
-}
+    // for (var i = 0; i < this.state.pieces.length; i++) {
+    //   for (var j = 0; j < this.state.pieces[i].length; j++) {
+    //     this.state.pieces[i][j].valid = false;
+    //     if (i == row - 1 && j >= column - 1 && j <= column + 1 && this.state.pieces[i][j].player == 0) {
+    //       this.state.pieces[i][j].valid = true;
+    //     }
+    //   }
+    // }
+    this.pieceSelected = {player: this.state.pieces[row][column].player, loc: [row, column]};
+    this.setState(this.state);
+  }
 
   render() {
+    let result = _.map(this.state.pieces, (row, index) => {
+      return <Row
+        row={row}
+        root={this}
+        player={this.player}
+        rowNum={index}
+        key={index}
+        />
+    });
     return (
-        <canvas className="board" ref="board" height={this.height} width={this.width} />
+      <div className="container board">
+          {result}
+      </div>
     );
   }
+}
+
+function Piece(props) {
+  if (props.player == 1) {
+    return (
+      <div className="piece black" onClick={() => props.root.on_select(props.row, props.col)}></div>
+    )
+  } else {
+    return (
+      <div className="piece red" onClick={() => props.root.on_select(props.row, props.col)}></div>
+    )
+  }
+}
+
+function Tile(props) {
+  let piece;
+  if (props.player > 0) {
+    piece = <Piece 
+              player={props.player} 
+              root={props.root} 
+              row={props.row}
+              col={props.col} />;
+  }
+  let classes = "tile";
+  if (props.col % 2 != props.row % 2) {
+    classes += " gray";
+  }
+  if (props.valid) {
+    classes += " no-piece";
+    return (
+    <div className={classes} onClick={() => props.root.on_move(props.row, props.col)}>
+      <div className="valid highlight">
+        {piece}
+      </div>
+    </div>
+    )
+  } else if (props.jump) {
+    classes += " no-piece";
+    return (
+    <div className={classes} onClick={() => props.root.on_move(props.row, props.col)}>
+      <div className="jump highlight">
+        {piece}
+      </div>
+    </div>
+    )
+  } else {
+    return (
+    <div className={classes} >
+        {piece}
+    </div>
+    )
+  }
+  
+}
+
+function Row(props) {
+  let result = _.map(props.row, (col, index) => {
+    return (
+      <div className="column board-column" key={index}>
+        <Tile 
+        name={col.name}
+        row={props.rowNum}
+        player={col.player}
+        valid={col.valid}
+        jump={col.jump}
+        col={index}
+        root={props.root} />
+      </div>
+      );
+  });
+  return <div className="row">{result}</div>;
 }
