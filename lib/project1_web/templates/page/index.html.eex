@@ -1,9 +1,51 @@
+<br />
 <div class="row">
   <div class="column">
-    <h1 id="index-page">Join a Game</h1>
+    <h1 id="index-page">Welcome to Checkers!</h1>
+    <h5>Join an existing room, or create your own below.</h5>
+  </div>
+</div>
+<br />
+<div class="row">
+    <div class="game-room">
+      <h3>Fundies</h3>
+      <p>Good for beginners, but don't forget that design recipe.</p>
       <%= form_for @conn, "/game", fn f -> %>
-      <p>Name: <%= text_input f, :name, placeholder: "My Name" %></p>
-      <p><%= submit "Play" %></p>
+      <p><%= text_input f, :player_name, placeholder: "Your Name" %>
+      <input name="name" type="hidden" value="Fundies 1"></p>
+      <%= submit "Enter" %>
+    <% end %>
+    </div>
+    <div class="game-room">
+      <h3>OOD</h3>
+      <p>Object oriented? More like Checkers oriented!</p>
+      <%= form_for @conn, "/game", fn f -> %>
+      <p><%= text_input f, :player_name, placeholder: "Your Name" %>
+      <input name="name" type="hidden" value="OOD"></p>
+      <%= submit "Enter" %>
+    <% end %>
+    </div>
+    <div class="game-room">
+      <h3>Web Dev</h3>
+      <p>Drink the Elixir of the internet - this checkers game.</p>
+      <%= form_for @conn, "/game", fn f -> %>
+      <p><%= text_input f, :player_name, placeholder: "Your Name" %>
+      <input name="name" type="hidden" value="OOD"></p>
+      <%= submit "Enter" %>
+    <% end %>
+    </div>
+</div>
+<br /> <br />
+<div class="row">
+  <div class="column create-room">
+    <%= form_for @conn, "/game", fn f -> %>
+    <p>Create a room: <%= text_input f, :name, placeholder: "Room Name" %>
+    <%= text_input f, :player_name, placeholder: "Your Name" %></p>
+    <%= submit "Create" %>
     <% end %>
   </div>
+</div>
+<br />
+<div class="row">
+    <p>Made with love by Eric Gift</p>
 </div>

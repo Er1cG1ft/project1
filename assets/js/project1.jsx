@@ -70,7 +70,8 @@ class Project1 extends React.Component {
     if (left != undefined) {
       if (left.player == 0) {
         left.valid = true;
-      } else if (left.player > 0 && left.player != this.player && this.state.pieces[row - 2][column - 2].player == 0) {
+      } else if (left.player > 0 && left.player != this.player && this.state.pieces[row - 2] != undefined 
+                && this.state.pieces[row - 2][column - 2] != undefined && this.state.pieces[row - 2][column - 2].player == 0) {
         this.state.pieces[row - 2][column - 2].jump = true;
       }
     }
@@ -78,7 +79,8 @@ class Project1 extends React.Component {
     if (right != undefined) {
       if (right.player == 0) {
         right.valid = true;
-      } else if (right.player > 0 && right.player != this.player && this.state.pieces[row - 2][column + 2].player == 0) {
+      } else if (right.player > 0 && right.player != this.player && this.state.pieces[row - 2] != undefined
+                && this.state.pieces[row - 2][column + 2] != undefined && this.state.pieces[row - 2][column + 2].player == 0) {
         this.state.pieces[row - 2][column + 2].jump = true;
       }
     }
@@ -131,11 +133,16 @@ function Players(props) {
   } else {
     name = p2.name;
   }
+  let turn = "Their turn.";
+  if (props.root.state.turn == props.root.player) {
+    turn = "Your turn!"
+  }
   return (
     <div className="playerBox">
       <div className="row">
         <div className="column">
           <h2 className="player1">{p1.name}</h2>
+          {turn}
         </div>
         <div className="column">
           <h2 className="player2">{name}</h2>
@@ -149,13 +156,21 @@ function Players(props) {
 }
 
 function Piece(props) {
+  let classes = "piece";
   if (props.player == 1) {
+    classes += " red";
+  } else {
+    classes += " black";
+  }
+  
+  if (props.root.player == props.root.state.turn && props.root.player == props.player) {
+    classes += " hover";
     return (
-      <div className="piece red" onClick={() => props.root.on_select(props.row, props.col)}></div>
+      <div className={classes} onClick={() => props.root.on_select(props.row, props.col)}></div>
     )
   } else {
     return (
-      <div className="piece black" onClick={() => props.root.on_select(props.row, props.col)}></div>
+      <div className={classes}></div>
     )
   }
 }

@@ -3,15 +3,39 @@
 @import "./phoenix.css";
 @import "~milligram/dist/milligram";
 
+body {
+    background-color: lightblue;
+}
+
+.game-room {
+    height:300px;
+    width:250px;
+    box-shadow: 10px 10px 8px #888888;
+    border:1px solid gray;
+    padding:20px;
+    text-align: center;
+    background-color:#F9E4C0;
+    margin-left:50px;
+}
+
+.create-room {
+    background-color:#D2E6B1;
+    box-shadow: 10px 10px 8px #888888;
+    border: 1px solid gray;
+    padding: 20px!important;
+}
+
 .piece {
     border-radius:100px;
     width:80px;
     height:80px;
     margin-left:17px;
+    border:1px solid silver;
 }
 
-.piece:hover{
+.hover:hover{
     cursor:pointer;
+    border:3px solid white;
 }
 
 .black {
@@ -40,6 +64,8 @@
     border: 1px solid black;
     padding-left:10px!important;
     padding-right:10px!important;
+    box-shadow: 10px 10px 8px #888888;
+    background-image: url("https://images.pexels.com/photos/129733/pexels-photo-129733.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
 }
 
 .gray {
@@ -50,7 +76,6 @@
     z-index: 10;
     display: block;
     height: 100%;
-    opacity:.4;
 }
 
 .valid {
@@ -69,9 +94,17 @@
     top:0;
     left:0;
     border:1px solid black;
-    padding:10px;
+    padding-left:40px;
+    padding-right:40px;
+    background-color:white;
+    border-radius: 50px 50px 0 0 ;
+    box-shadow: 10px 10px 8px #888888;
 }
 
 .player2 {
     float:right;
+}
+
+.playerBox h2 {
+    margin-bottom: 2px;
 }

@@ -34,18 +34,36 @@ defmodule Project1.Game do
     pieces = Enum.map(Enum.with_index(game.pieces), fn {r, v} -> 
       Enum.map(Enum.with_index(r), fn {p, i} ->
         cond do
+        #move piece to new square
         (v == Enum.at(to, 0) && i == Enum.at(to, 1)) ->
           Map.put(p, :player, Map.get(from, "player"))
+        #remove piece from old square
         (v == Enum.at(Map.get(from, "loc"), 0) && i == Enum.at(Map.get(from, "loc"), 1)) ->
           Map.put(p, :player, 0)
+        #jump
         ((Enum.at(to, 0) - Enum.at(Map.get(from, "loc"), 0) == 2 || Enum.at(Map.get(from, "loc"), 0) - Enum.at(to, 0) == 2)
               && (v == Enum.max([Enum.at(to, 0), Enum.at(Map.get(from, "loc"), 0)]) - 1 &&
               i == Enum.max([Enum.at(to, 1), Enum.at(Map.get(from, "loc"), 1)]) - 1)) ->
           Map.put(p, :player, 0)
+        (Enum.at(to, 0) == 4 && v == Enum.at(to, 0) && i == Enum.at(to, 1) && game.turn == 1) ->
+            Map.put(p, :king, true)
         true -> p
         end
       end)
     end)
+    
+    #check for kings
+    # pieces = Enum.map(pieces, fn r -> 
+    #   Enum.map(r, fn p -> 
+    #     cond do
+    #       (Enum.at(to, 0) == 4 && game.turn == 1) ->
+    #         Map.put(p, :king, true)
+    #       (Enum.at(to, 0) == 7 && game.turn == 2) ->
+    #         Map.put(p, :king, true)
+    #       true -> p
+    #     end
+    #   end)
+    # end)
     
     Map.merge(game, %{pieces: pieces, turn: switch_turn(game.turn)})
   end
@@ -71,7 +89,7 @@ defmodule Project1.Game do
       ]
     Enum.map(pieces, fn r -> 
       Enum.map(r, fn p -> 
-        %{player: p, color: "gray"}
+        %{player: p, color: "gray", king: false}
       end)
     end)
   end
