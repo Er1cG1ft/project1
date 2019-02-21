@@ -36,10 +36,23 @@ class Project1 extends React.Component {
       this.channel.push("add_player", {playerName: window.playerName})
         .receive("ok", this.got_view.bind(this));
     }
+    if (this.player != undefined && view.game.pieces != undefined) {
+      if (this.player == 2) {
+        view.game.pieces = _.reverse(view.game.pieces);
+        for(var i = 0; i < view.game.pieces.length; i++) {
+          view.game.pieces[i] = _.reverse(view.game.pieces[i]);
+        }
+      }
+    }
     this.setState(view.game);
   }
   
   on_move(row, column) {
+    if (this.player == 2) {
+      row = 7 - row;
+      column = 7 - column;
+      this.pieceSelected.loc = [7 - this.pieceSelected.loc[0], 7 - this.pieceSelected.loc[1]];
+    }
     this.channel.push("move", { from: this.pieceSelected, to: [row, column] })
         .receive("ok", this.got_view.bind(this));
   }
@@ -138,11 +151,11 @@ function Players(props) {
 function Piece(props) {
   if (props.player == 1) {
     return (
-      <div className="piece black" onClick={() => props.root.on_select(props.row, props.col)}></div>
+      <div className="piece red" onClick={() => props.root.on_select(props.row, props.col)}></div>
     )
   } else {
     return (
-      <div className="piece red" onClick={() => props.root.on_select(props.row, props.col)}></div>
+      <div className="piece black" onClick={() => props.root.on_select(props.row, props.col)}></div>
     )
   }
 }

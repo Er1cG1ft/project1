@@ -31,7 +31,6 @@ defmodule Project1.Game do
   end
   
   def move(game, from, to) do
-    IO.inspect(game.players)
     pieces = Enum.map(Enum.with_index(game.pieces), fn {r, v} -> 
       Enum.map(Enum.with_index(r), fn {p, i} ->
         cond do
@@ -39,24 +38,36 @@ defmodule Project1.Game do
           Map.put(p, :player, Map.get(from, "player"))
         (v == Enum.at(Map.get(from, "loc"), 0) && i == Enum.at(Map.get(from, "loc"), 1)) ->
           Map.put(p, :player, 0)
+        ((Enum.at(to, 0) - Enum.at(Map.get(from, "loc"), 0) == 2 || Enum.at(Map.get(from, "loc"), 0) - Enum.at(to, 0) == 2)
+              && (v == Enum.max([Enum.at(to, 0), Enum.at(Map.get(from, "loc"), 0)]) - 1 &&
+              i == Enum.max([Enum.at(to, 1), Enum.at(Map.get(from, "loc"), 1)]) - 1)) ->
+          Map.put(p, :player, 0)
         true -> p
         end
       end)
     end)
     
-    Map.merge(game, %{pieces: pieces, turn: game.turn})
+    Map.merge(game, %{pieces: pieces, turn: switch_turn(game.turn)})
+  end
+  
+  def switch_turn(turn) do
+    if turn == 1 do
+      2
+    else
+      1
+    end
   end
   
   def new_board do
     pieces = [
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 2, 0, 2, 0, 2, 0, 2],
         [2, 0, 2, 0, 2, 0, 2, 0],
         [0, 2, 0, 2, 0, 2, 0, 2],
-        [2, 0, 2, 0, 2, 0, 2, 0]
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0]
       ]
     Enum.map(pieces, fn r -> 
       Enum.map(r, fn p -> 
