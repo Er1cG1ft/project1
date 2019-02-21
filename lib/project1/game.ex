@@ -2,20 +2,25 @@ defmodule Project1.Game do
   def new do
     %{
       pieces: new_board(),
-      players: []
+      players: [],
+      turn: 1
     }
   end
   
   def client_view(game) do
+    pieces = game.pieces
+    players = game.players
+    turn = game.turn
     %{
-      pieces: game.pieces,
-      players: game.players
+      pieces: pieces,
+      players: players,
+      turn: turn
     }
   end
   
-  def add_player(game, name) do
+  def add_player(game, playerName) do
     players = game.players
-    players = players ++ [%{id: length(game.players) + 1, name: name}]
+    players = players ++ [%{id: length(game.players) + 1, name: playerName}]
     # cond do
     #   Enum.at(players, 0).name == nil -> players = Map.put(Enum.at(players, 0), :name, name)
     #   Enum.at(players, 1).name == nil -> players = Map.put(Enum.at(players, 1), :name, name)
@@ -26,6 +31,7 @@ defmodule Project1.Game do
   end
   
   def move(game, from, to) do
+    IO.inspect(game.players)
     pieces = Enum.map(Enum.with_index(game.pieces), fn {r, v} -> 
       Enum.map(Enum.with_index(r), fn {p, i} ->
         cond do
@@ -37,7 +43,8 @@ defmodule Project1.Game do
         end
       end)
     end)
-    Map.merge(game, %{pieces: pieces})
+    
+    Map.merge(game, %{pieces: pieces, turn: game.turn})
   end
   
   def new_board do

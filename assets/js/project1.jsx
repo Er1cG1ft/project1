@@ -23,10 +23,6 @@ class Project1 extends React.Component {
     this.channel.on("update", this.got_view.bind(this));
   }
   
-  set_player(player) {
-    this.player = player.id;
-  }
-  
   got_view(view) {
     console.log("Got view:");
     console.log(view);
@@ -37,7 +33,7 @@ class Project1 extends React.Component {
       this.player = this.user.id;
     }
     if (this.player < 0) {
-      this.channel.push("add_player", {name: window.playerName})
+      this.channel.push("add_player", {playerName: window.playerName})
         .receive("ok", this.got_view.bind(this));
     }
     this.setState(view.game);
@@ -58,26 +54,22 @@ class Project1 extends React.Component {
     let left = this.state.pieces[row - 1][column - 1];
     let right = this.state.pieces[row - 1][column + 1];
     
-    if (left.player == 0){
-      left.valid = true;
-    } else if (left.player > 0 && left.player != this.player && this.state.pieces[row - 2][column - 2].player == 0) {
-      this.state.pieces[row - 2][column - 2].jump = true;
+    if (left != undefined) {
+      if (left.player == 0) {
+        left.valid = true;
+      } else if (left.player > 0 && left.player != this.player && this.state.pieces[row - 2][column - 2].player == 0) {
+        this.state.pieces[row - 2][column - 2].jump = true;
+      }
     }
     
-    if (right.player == 0){
-      right.valid = true;
-    } else if (right.player > 0 && right.player != this.player && this.state.pieces[row - 2][column + 2].player == 0) {
-      this.state.pieces[row - 2][column + 2].jump = true;
+    if (right != undefined) {
+      if (right.player == 0) {
+        right.valid = true;
+      } else if (right.player > 0 && right.player != this.player && this.state.pieces[row - 2][column + 2].player == 0) {
+        this.state.pieces[row - 2][column + 2].jump = true;
+      }
     }
-    
-    // for (var i = 0; i < this.state.pieces.length; i++) {
-    //   for (var j = 0; j < this.state.pieces[i].length; j++) {
-    //     this.state.pieces[i][j].valid = false;
-    //     if (i == row - 1 && j >= column - 1 && j <= column + 1 && this.state.pieces[i][j].player == 0) {
-    //       this.state.pieces[i][j].valid = true;
-    //     }
-    //   }
-    // }
+
     this.pieceSelected = {player: this.state.pieces[row][column].player, loc: [row, column]};
     this.setState(this.state);
   }
@@ -93,10 +85,53 @@ class Project1 extends React.Component {
         />
     });
     return (
+      <span>
+      <div className="players"><Players name={this.state.players} root={this} me={this.player}/></div>
       <div className="container board">
           {result}
       </div>
+      </span>
     );
+  }
+}
+
+function Players(props) {
+  if (props.root.state.players != undefined) {
+  let p1 = props.root.state.players.find(function(element) {
+      return element.id == props.me;
+    });
+  if (p1 == undefined) {
+    return null;
+  }
+  let p2Id = 0;
+  if (p1.id == 1) {
+    p2Id = 2;
+  } else {
+    p2Id = 1;
+  }
+  let p2 = props.root.state.players.find(function(element) {
+      return element.id == p2Id;
+    });
+  let name = "";
+  if (p2 == undefined) {
+    name = "Waiting for player";
+  } else {
+    name = p2.name;
+  }
+  return (
+    <div className="playerBox">
+      <div className="row">
+        <div className="column">
+          <h2 className="player1">{p1.name}</h2>
+        </div>
+        <div className="column">
+          <h2 className="player2">{name}</h2>
+        </div>
+      </div>
+    </div>
+    )
+  } else {
+    return null;
   }
 }
 

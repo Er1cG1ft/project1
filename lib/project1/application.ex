@@ -13,7 +13,8 @@ defmodule Project1.Application do
       # Starts a worker by calling: Project1.Worker.start_link(arg)
       # {Project1.Worker, arg},
       Project1.GameSup,
-      Project1.BackupAgent
+      Project1.BackupAgent,
+      Project1.GameServer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

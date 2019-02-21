@@ -20,12 +20,16 @@ defmodule Project1.GameServer do
     GenServer.start_link(__MODULE__, game, name: reg(name))
   end
 
-  def move(name, from, to) do
-    GenServer.call(reg(name), {:move, from, to})
+  def move(game, name, from, to) do
+    GenServer.call(reg(name), {:move, name, from, to})
   end
-
-  def peek(name) do
-    GenServer.call(reg(name), {:peek, name})
+  
+  def add_player(game, name, playerName) do
+    GenServer.call(reg(name), {:add_player, name, playerName})
+  end
+  
+  def client_view(name) do
+    GenServer.call(reg(name), {:client_view, name})
   end
 
   def init(game) do
@@ -37,8 +41,16 @@ defmodule Project1.GameServer do
     Project1.BackupAgent.put(name, game)
     {:reply, game, game}
   end
-
-  def handle_call({:peek, _name}, _from, game) do
+  
+  def handle_call({:add_player, name, playerName}, _from, game) do
+    game = Project1.Game.add_player(game, playerName)
+    Project1.BackupAgent.put(name, game)
+    {:reply, game, game}
+  end
+  
+  def handle_call({:client_view, name}, _from, game) do
+    game = Project1.Game.client_view(game)
+    Project1.BackupAgent.put(name, game)
     {:reply, game, game}
   end
 end

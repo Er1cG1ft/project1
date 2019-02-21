@@ -64,3 +64,14 @@
 .highlight:hover {
     cursor:pointer;
 }
+
+.players {
+    top:0;
+    left:0;
+    border:1px solid black;
+    padding:10px;
+}
+
+.player2 {
+    float:right;
+}

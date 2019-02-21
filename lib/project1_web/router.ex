@@ -17,7 +17,7 @@ defmodule Project1Web.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/game/:name", PageController, :game
+    get "/game/:name/:player_name", PageController, :game
     post "/game", PageController, :game
   end
 

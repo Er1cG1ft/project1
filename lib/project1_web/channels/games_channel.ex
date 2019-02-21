@@ -2,17 +2,19 @@ defmodule Project1Web.GamesChannel do
   use Project1Web, :channel
   alias Project1.Game
   alias Project1.BackupAgent
+  alias Project1.GameServer
 
   intercept ["update"]
   
   def join("games:" <> name, payload, socket) do
     if authorized?(payload) do
-      game = BackupAgent.get(name) || Game.new()
+      #game = BackupAgent.get(name) || Game.new()
+      game = GameServer.start(name)
       BackupAgent.put(name, game)
       socket = socket
       |> assign(:game, game)
       |> assign(:name, name)
-      {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
+      {:ok, %{"join" => name, "game" => GameServer.client_view(name)}, socket}
     else
       {:error, %{reason: "unauthorized"}}
     end
@@ -31,23 +33,23 @@ defmodule Project1Web.GamesChannel do
     {:noreply, socket}
   end
   
-  def handle_in("add_player", %{"name" => playerName}, socket) do
-    name = socket.assigns[:name]
-    game = Game.add_player(socket.assigns[:game], playerName)
+  def handle_in("add_player", %{"playerName" => playerName}, socket) do
+    #name = socket.assigns[:name]
+    game = GameServer.add_player(socket.assigns[:game], socket.assigns[:name], playerName)
+    #socket = assign(socket, :game, game)
+    #BackupAgent.put(name, game)
     push_update! game, socket
-    socket = assign(socket, :game, game)
-    BackupAgent.put(name, game)
-    {:noreply, socket}
-    #{:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
+    #{:noreply, socket}
+    {:reply, {:ok, %{ "game" => game}}, socket}
   end
 
   def handle_in("move", %{"from" => from, "to" => to}, socket) do
-    name = socket.assigns[:name]
-    game = Game.move(socket.assigns[:game], from, to)
+    game = GameServer.move(socket.assigns[:game], socket.assigns[:name], from, to)
+    #socket = assign(socket, :game, game)
+    #BackupAgent.put(name, game)
     push_update! game, socket
-    socket = assign(socket, :game, game)
-    BackupAgent.put(name, game)
-    {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
+    #{:noreply, socket}
+    {:reply, {:ok, %{ "game" => game}}, socket}
   end
   
   def handle_out("update", game_data, socket) do

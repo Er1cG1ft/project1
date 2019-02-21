@@ -5,7 +5,7 @@ defmodule Project1Web.PageController do
     render(conn, "index.html")
   end
   
-  def game(conn, %{"name" => name}) do
-    render conn, "game.html", name: name, player_name: to_string(:inet_parse.ntoa(conn.remote_ip))
+  def game(conn, %{"name" => name, "player_name" => player_name}) do
+    render conn, "game.html", name: name, player_name: player_name
   end
 end
