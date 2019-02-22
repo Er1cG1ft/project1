@@ -9,7 +9,7 @@ use Mix.Config
 
 # Configures the endpoint
 config :project1, Project1Web.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "checkers.ericgift.com"],
   secret_key_base: "abwkGKampR+JmdbnXOXl8bqENb/1rGS2pEGSlJDROfjH+7q6Ropu2Wzi+fPnY7/0",
   render_errors: [view: Project1Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Project1.PubSub, adapter: Phoenix.PubSub.PG2]

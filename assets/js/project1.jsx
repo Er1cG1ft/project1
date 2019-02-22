@@ -84,8 +84,32 @@ class Project1 extends React.Component {
         this.state.pieces[row - 2][column + 2].jump = true;
       }
     }
+    
+    let king = this.state.pieces[row][column].king;
+    if (king) {
+      let left = this.state.pieces[row + 1][column - 1];
+      let right = this.state.pieces[row + 1][column + 1];
+      
+      if (left != undefined) {
+        if (left.player == 0) {
+          left.valid = true;
+        } else if (left.player > 0 && left.player != this.player && this.state.pieces[row + 2] != undefined 
+                  && this.state.pieces[row + 2][column - 2] != undefined && this.state.pieces[row + 2][column - 2].player == 0) {
+          this.state.pieces[row + 2][column - 2].jump = true;
+        }
+      }
+      
+      if (right != undefined) {
+        if (right.player == 0) {
+          right.valid = true;
+        } else if (right.player > 0 && right.player != this.player && this.state.pieces[row + 2] != undefined
+                  && this.state.pieces[row + 2][column + 2] != undefined && this.state.pieces[row + 2][column + 2].player == 0) {
+          this.state.pieces[row + 2][column + 2].jump = true;
+        }
+      }
+    }
 
-    this.pieceSelected = {player: this.state.pieces[row][column].player, loc: [row, column]};
+    this.pieceSelected = {player: this.state.pieces[row][column].player, loc: [row, column], king: this.state.pieces[row][column].king};
     this.setState(this.state);
   }
 
@@ -128,14 +152,15 @@ function Players(props) {
       return element.id == p2Id;
     });
   let name = "";
-  if (p2 == undefined) {
-    name = "Waiting for player";
-  } else {
+  if (p2 != undefined) {
     name = p2.name;
-  }
-  let turn = "Their turn.";
-  if (props.root.state.turn == props.root.player) {
+  } 
+  
+  let turn = "Waiting for player.";
+  if (props.root.state.players.length >= 2 && props.root.state.turn == props.root.player) {
     turn = "Your turn!"
+  } else if (props.root.state.players.length >= 2 && props.root.state.turn != props.root.player) {
+    turn = "Their turn."; 
   }
   return (
     <div className="playerBox">
@@ -163,14 +188,20 @@ function Piece(props) {
     classes += " black";
   }
   
-  if (props.root.player == props.root.state.turn && props.root.player == props.player) {
+  let icon = "";
+  if (props.king) {
+    icon = <i className="fas fa-crown"></i>;
+  }
+  
+  if (props.root.state.players.length >= 2 && props.root.player == props.root.state.turn 
+      && props.root.player == props.player) {
     classes += " hover";
     return (
-      <div className={classes} onClick={() => props.root.on_select(props.row, props.col)}></div>
+      <div className={classes} onClick={() => props.root.on_select(props.row, props.col)}>{icon}</div>
     )
   } else {
     return (
-      <div className={classes}></div>
+      <div className={classes}>{icon}</div>
     )
   }
 }
@@ -181,6 +212,7 @@ function Tile(props) {
     piece = <Piece 
               player={props.player} 
               root={props.root} 
+              king={props.king}
               row={props.row}
               col={props.col} />;
   }
@@ -226,6 +258,7 @@ function Row(props) {
         player={col.player}
         valid={col.valid}
         jump={col.jump}
+        king={col.king}
         col={index}
         root={props.root} />
       </div>

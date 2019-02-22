@@ -36,6 +36,8 @@ body {
 .hover:hover{
     cursor:pointer;
     border:3px solid white;
+    width:83px;
+    height:83px;
 }
 
 .black {
@@ -107,4 +109,11 @@ body {
 
 .playerBox h2 {
     margin-bottom: 2px;
+}
+
+.fa-crown {
+    font-size:30px;
+    color:gold;
+    margin-top:20px;
+    margin-left:20px;
 }
